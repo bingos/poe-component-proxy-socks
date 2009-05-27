@@ -7,7 +7,7 @@ use Socket;
 use Net::Netmask;
 use vars qw($VERSION);
 
-$VERSION = '0.08';
+$VERSION = '1.00';
 
 sub spawn {
   my $package = shift;
@@ -762,11 +762,11 @@ The poco supports both SOCKS CONNECT and SOCKS BIND commands.
 
 =over
 
-=item spawn
+=item C<spawn>
 
 Starts a new SOCKS proxy session and returns an object. If spawned from within another
 POE session, the parent session will be automagically registered and receive a 
-'socksd_registered' event. See below for details.
+C<socksd_registered> event. See below for details.
 
 Takes several optional parameters:
 
@@ -785,39 +785,39 @@ These methods are available on the returned POE::Component::Proxy::SOCKS object:
 
 =over
 
-=item session_id
+=item C<session_id>
 
 Returns the POE session ID of the poco's session.
 
-=item shutdown
+=item C<shutdown>
 
 Terminates the poco, dropping all connections and pending connections.
 
-=item send_event
+=item C<send_event>
 
 Sends an event through the poco's event handling system.
 
-=item add_denial
+=item C<add_denial>
 
 Takes one mandatory argument. The mandatory argument is a L<Net::Netmask> object that will be used to check connecting IP addresses against.
 
-=item del_denial
+=item C<del_denial>
 
 Takes one mandatory argument, a L<Net::Netmask> object to remove from the current denial list.
 
-=item denied
+=item C<denied>
 
 Takes one argument, an IP address. Returns true or false depending on whether that IP is denied or not.
 
-=item add_exemption
+=item C<add_exemption>
 
 Takes one mandatory argument, a L<Net::Netmask> object that will be checked against connecting IP addresses for exemption from denials.
 
-=item del_exemption
+=item C<del_exemption>
 
 Takes one mandatory argument, a L<Net::Netmask> object to remove from the current exemption list.
 
-=item exempted
+=item C<exempted>
 
 Takes one argument, an IP address. Returns true or false depending on whether that IP is exempt from denial or not.
 
@@ -827,18 +827,18 @@ Takes one argument, an IP address. Returns true or false depending on whether th
 
 =over
 
-=item register
+=item C<register>
 
 Takes N arguments: a list of event names that your session wants to listen for, minus the 'socksd_' prefix, ( this is 
 similar to L<POE::Component::IRC> ). 
 
 Registering for 'all' will cause it to send all SOCKSD-related events to you; this is the easiest way to handle it.
 
-=item unregister
+=item C<unregister>
 
 Takes N arguments: a list of event names which you don't want to receive. If you've previously done a 'register' for a particular event which you no longer care about, this event will tell the SOCKSD to stop sending them to you. (If you haven't, it just ignores you. No big deal).
 
-=item shutdown
+=item C<shutdown>
 
 Terminates the poco, dropping all connections and pending connections.
 
@@ -846,49 +846,49 @@ Terminates the poco, dropping all connections and pending connections.
 
 =head1 OUTPUT EVENTS
 
-The component generates a number of 'socksd_' prefixed events that are dispatched to registered sessions.
+The component generates a number of C<socksd_> prefixed events that are dispatched to registered sessions.
 
 =over
 
-=item socksd_registered
+=item C<socksd_registered>
 
 This event is sent to a registering session. ARG0 is POE::Component::Proxy::SOCKS
 object.
 
-=item socksd_denied
+=item C<socksd_denied>
 
 Generated whenever a client is denied access. ARG0 is the client IP and ARG1 the client port.
 
-=item socksd_connection
+=item C<socksd_connection>
 
 Generated when client successfully connects. ARG0 is a unique client ID, ARG1 is the peer address, ARG2 is the peer port, ARG3 is our socket address and ARG4 is our socket port.
 
-=item socksd_rejected
+=item C<socksd_rejected>
 
 Generated when a SOCKS transaction is rejected. ARG0 is the unique client ID, ARG1 is the SOCKS result code and ARG2 is a reason for the rejection.
 
-=item socksd_listener_failed 
+=item C<socksd_listener_failed> 
 
 Generated if the poco fails to get a listener. ARG0 is the operation, ARG1 is the errnum and ARG2 is the errstr.
 
-=item socksd_disconnected
+=item C<socksd_disconnected>
 
 Generated whenever a client disconnects. ARG0 is the unique client ID.
 
-=item socksd_dns_lookup
+=item C<socksd_dns_lookup>
 
 Generated whenever the poco services a successful SOCKS 4a DNS lookup. ARG0 is the unique 
 client ID. ARG1 is the hostname resolved and ARG2 is the IP address of that host.
 
-=item socksd_sock_up 
+=item C<socksd_sock_up> 
 
 Generated when a CONNECT is successful. ARG0 is the unique client ID, ARG1 is the unqiue link ID, ARG2 is the destination IP and ARG3 the destination port.
 
-=item socksd_bind_up 
+=item C<socksd_bind_up> 
 
 Generated whenever a BIND is succesful. ARG0 is the unique client ID, ARG1 is the unique ID for the listener, ARG2 is our socket IP and ARG3 is our port.
 
-=item socksd_sock_down
+=item C<socksd_sock_down>
 
 Generated whenever a socket to an application server is terminated. ARG0 is the unique client ID, ARG1 is the unqiue link ID, ARG2 is the error string.
 
@@ -896,11 +896,11 @@ Generated whenever a socket to an application server is terminated. ARG0 is the 
 
 =head1 AUTHOR
 
-Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+Chris C<BinGOs> Williams <chris@bingosnet.co.uk>
 
 =head1 LICENSE
 
-Copyright C<(c)> Chris Williams.
+Copyright E<copy> Chris Williams.
 
 This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 
@@ -909,3 +909,5 @@ This program is free software; you can redistribute it and/or modify it under th
 L<http://socks.permeo.com/protocol/socks4.protocol>
 
 L<http://socks.permeo.com/protocol/socks4a.protocol>
+
+=cut

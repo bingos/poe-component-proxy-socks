@@ -5,25 +5,25 @@ SYNOPSIS
        use strict;
        use Net::Netmask;
        use POE qw(Component::Proxy::SOCKS);
-       
-   $|=1;
-       
-   POE::Session->create(
+   
+       $|=1;
+   
+       POE::Session->create(
           package_states => [ 
             'main' => [ qw(_start _default socksd_registered) ],
           ],
        );
-       
-   $poe_kernel->run();
+   
+       $poe_kernel->run();
        exit 0;
-       
-   sub _start {
+   
+       sub _start {
          my ($kernel,$heap) = @_[KERNEL,HEAP];
          $heap->{socksd} = POE::Component::Proxy::SOCKS->spawn( alias => 'socksd', ident => 0 );
          return;
        }
-       
-   sub socksd_registered {
+   
+       sub socksd_registered {
          my $socksd = $_[ARG0];
          my $all = Net::Netmask->new2('any');
          my $loopback = Net::Netmask->new2('127.0.0.1');
@@ -33,12 +33,12 @@ SYNOPSIS
          $socksd->add_exemption( $local );
          return;
        }
-       
-   sub _default {
+   
+       sub _default {
          my ($event, $args) = @_[ARG0 .. $#_];
          my @output = ( "$event: " );
-       
-     foreach my $arg ( @$args ) {
+   
+         foreach my $arg ( @$args ) {
            if ( ref($arg) eq 'ARRAY' ) {
               push( @output, "[" . join(" ,", @$arg ) . "]" );
            } else {
@@ -187,6 +187,12 @@ OUTPUT EVENTS
 
 AUTHOR
     Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+
+LICENSE
+    Copyright "(c)" Chris Williams.
+
+    This program is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
 
 SEE ALSO
     <http://socks.permeo.com/protocol/socks4.protocol>
