@@ -477,7 +477,7 @@ sub _sock_up {
   $self->{clients}->{ $client_id }->{link_id} = $link_id;
   $self->{links}->{ $link_id } = { client => $client_id, wheel => $wheel, sockaddr => $sockaddr, sockport => $sockport };
   my $client = $self->{clients}->{ $client_id };
-  my $response = pack "CCnN", 0, 90, $client->{dstport}, inet_aton( $client->{dstip} );
+  my $response = pack "CCnN", 0, 90, $client->{dstport}, unpack("N", inet_aton( $client->{dstip}) );
   $client->{wheel}->put( $response );
   $self->_send_event( 'socksd_sock_up', $client_id, $link_id, $client->{dstip}, $client->{dstport} );
   return;

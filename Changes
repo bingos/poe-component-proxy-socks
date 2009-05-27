@@ -1,6 +1,10 @@
 POE::Component::Proxy::SOCKS
 ============================
 
+1.00	Wed May 27 22:17:41 BST 2009
+	- Pod tidying & Makefile.PL updates
+	- Fix from Rob Bloodgood [RT #37145]
+
 0.08	Mon May 19 17:35:18 BST 2008
 	- removed kwalitee test
 	- added license information
