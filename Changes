@@ -1,6 +1,9 @@
 POE::Component::Proxy::SOCKS
 ============================
 
+1.02  Fri Nov 27 16:05:10 GMT 2009
+  - Applied patch from Nick Syberia(?) RT #52104#
+
 1.00	Wed May 27 22:17:41 BST 2009
 	- Pod tidying & Makefile.PL updates
 	- Fix from Rob Bloodgood [RT #37145]

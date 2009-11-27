@@ -10,7 +10,7 @@ auto_license holder => 'Chris Williams';
 perl_version '5.006';
 build_requires 'Test::More' => 0.47;
 requires 'Net::Netmask' => 1.9015;
-requires 'POE' => 1.005;
+requires 'POE' => 1.280;
 requires 'POE::Wheel::SocketFactory' => 0;
 requires 'POE::Wheel::ReadWrite' => 0;
 requires 'POE::Filter::Stream' => 0;

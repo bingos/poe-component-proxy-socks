@@ -7,7 +7,7 @@ use Socket;
 use Net::Netmask;
 use vars qw($VERSION);
 
-$VERSION = '1.00';
+$VERSION = '1.02';
 
 sub spawn {
   my $package = shift;
@@ -531,6 +531,8 @@ sub _sock_input {
 sub _sock_down {
   my ($self,$errstr,$link_id) = @_[OBJECT,ARG2,ARG3];
   return unless $self->_link_exists( $link_id );
+  my $client_id = $self->{links}->{ $link_id }->{client};
+  $self->{clients}->{$client_id}->{wheel}->flush;
   my $link = delete $self->{links}->{ $link_id };
   if ( $link->{client} and $self->_conn_exists( $link->{client} ) ) {
     delete $self->{clients}->{ $link->{client} };
