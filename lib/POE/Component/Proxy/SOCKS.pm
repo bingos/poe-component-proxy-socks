@@ -1,13 +1,12 @@
 package POE::Component::Proxy::SOCKS;
 
+#ABSTRACT: A POE based SOCKS 4 proxy server.
+
 use strict;
 use warnings;
 use POE qw(Component::Client::Ident Component::Client::DNS Wheel::SocketFactory Wheel::ReadWrite Filter::Stream);
 use Socket;
 use Net::Netmask;
-use vars qw($VERSION);
-
-$VERSION = '1.02';
 
 sub spawn {
   my $package = shift;
@@ -23,15 +22,15 @@ sub spawn {
 		      ident_agent_error => '_ident_agent_error',
 	            },
 	   $self => [ qw(
-			_start 
-			register 
-			unregister 
-			_accept_client 
-			_accept_failed 
-			_conn_input 
-			_conn_error 
-			_conn_alarm 
-			__send_event 
+			_start
+			register
+			unregister
+			_accept_client
+			_accept_failed
+			_conn_input
+			_conn_error
+			_conn_alarm
+			__send_event
 			_ident_done
 			_reject_client
 			_dns_response
@@ -60,19 +59,19 @@ sub session_id {
 sub _conn_exists {
   my ($self,$wheel_id) = @_;
   return 0 unless $wheel_id and defined $self->{clients}->{ $wheel_id };
-  return 1; 
+  return 1;
 }
 
 sub _link_exists {
   my ($self,$wheel_id) = @_;
   return 0 unless $wheel_id and defined $self->{links}->{ $wheel_id };
-  return 1; 
+  return 1;
 }
 
 sub _sock_exists {
   my ($self,$wheel_id) = @_;
   return 0 unless $wheel_id and defined $self->{sockets}->{ $wheel_id };
-  return 1; 
+  return 1;
 }
 
 sub _bind_request {
@@ -100,7 +99,7 @@ sub _start {
   $self->{session_id} = $_[SESSION]->ID();
   if ( $self->{alias} ) {
 	$kernel->alias_set( $self->{alias} );
-  } 
+  }
   else {
 	$kernel->refcount_increment( $self->{session_id} => __PACKAGE__ );
   }
@@ -162,11 +161,11 @@ sub _accept_client {
   );
 
   return unless $wheel;
-  
+
   my $id = $wheel->ID();
-  $self->{clients}->{ $id } = 
-  { 
-	wheel    => $wheel, 
+  $self->{clients}->{ $id } =
+  {
+	wheel    => $wheel,
 	peeraddr => $peeraddr,
 	peerport => $peerport,
 	sockaddr => $sockaddr,
@@ -177,12 +176,12 @@ sub _accept_client {
   $self->{clients}->{ $id }->{alarm} = $kernel->delay_set( '_conn_alarm', $self->{time_out} || 120, $id );
 
   if ( $self->{ident} ) {
-       POE::Component::Client::Ident::Agent->spawn( 
-		PeerAddr => $peeraddr, 
-		PeerPort => $peerport, 
+       POE::Component::Client::Ident::Agent->spawn(
+		PeerAddr => $peeraddr,
+		PeerPort => $peerport,
 		SockAddr => $sockaddr,
-	        SockPort => $sockport, 
-		BuggyIdentd => 1, 
+	        SockPort => $sockport,
+		BuggyIdentd => 1,
 		TimeOut => 10,
 		Reference => $id );
   }
@@ -391,7 +390,7 @@ sub _delete_client {
     delete $self->{links}->{ $client->{link_id} };
   }
   if ( $client->{factory} and $self->_sock_exists( $client->{factory} ) ) {
-    delete $self->{sockets}->{ $client->{factory} }; 
+    delete $self->{sockets}->{ $client->{factory} };
   }
   return 1;
 }
@@ -606,7 +605,7 @@ sub _unregister_sessions {
   foreach my $session_id ( keys %{ $self->{sessions} } ) {
      if (--$self->{sessions}->{$session_id}->{refcnt} <= 0) {
         delete $self->{sessions}->{$session_id};
-	$poe_kernel->refcount_decrement($session_id, __PACKAGE__) 
+	$poe_kernel->refcount_decrement($session_id, __PACKAGE__)
 		unless ( $session_id eq $socksd_id );
      }
   }
@@ -647,7 +646,7 @@ sub add_denial {
   $self->{denials}->{ $netmask } = $netmask;
   return 1;
 }
- 
+
 sub del_denial {
   my $self = shift;
   my $netmask = shift || return;
@@ -693,36 +692,33 @@ sub exempted {
   return 0;
 }
 
-1;
-__END__
+qq[SOCKS it to me];
 
-=head1 NAME
-
-POE::Component::Proxy::SOCKS - A POE based SOCKS 4 proxy server.
+=pod
 
 =head1 SYNOPSIS
 
    use strict;
    use Net::Netmask;
    use POE qw(Component::Proxy::SOCKS);
-   
+
    $|=1;
-   
+
    POE::Session->create(
-      package_states => [ 
+      package_states => [
    	'main' => [ qw(_start _default socksd_registered) ],
       ],
    );
-   
+
    $poe_kernel->run();
    exit 0;
-   
+
    sub _start {
      my ($kernel,$heap) = @_[KERNEL,HEAP];
      $heap->{socksd} = POE::Component::Proxy::SOCKS->spawn( alias => 'socksd', ident => 0 );
      return;
    }
-   
+
    sub socksd_registered {
      my $socksd = $_[ARG0];
      my $all = Net::Netmask->new2('any');
@@ -733,11 +729,11 @@ POE::Component::Proxy::SOCKS - A POE based SOCKS 4 proxy server.
      $socksd->add_exemption( $local );
      return;
    }
-   
+
    sub _default {
      my ($event, $args) = @_[ARG0 .. $#_];
      my @output = ( "$event: " );
-   
+
      foreach my $arg ( @$args ) {
        if ( ref($arg) eq 'ARRAY' ) {
           push( @output, "[" . join(" ,", @$arg ) . "]" );
@@ -755,8 +751,8 @@ POE::Component::Proxy::SOCKS is a L<POE> component that implements a SOCKS versi
 proxy server. It has IP address based access controls, provided by L<Net::Netmask>, and
 can use IDENT to further confirm user identity.
 
-POE sessions may register with the SOCKS component to receive events relating to 
-connections etc. 
+POE sessions may register with the SOCKS component to receive events relating to
+connections etc.
 
 The poco supports both SOCKS CONNECT and SOCKS BIND commands.
 
@@ -767,7 +763,7 @@ The poco supports both SOCKS CONNECT and SOCKS BIND commands.
 =item C<spawn>
 
 Starts a new SOCKS proxy session and returns an object. If spawned from within another
-POE session, the parent session will be automagically registered and receive a 
+POE session, the parent session will be automagically registered and receive a
 C<socksd_registered> event. See below for details.
 
 Takes several optional parameters:
@@ -831,8 +827,8 @@ Takes one argument, an IP address. Returns true or false depending on whether th
 
 =item C<register>
 
-Takes N arguments: a list of event names that your session wants to listen for, minus the 'socksd_' prefix, ( this is 
-similar to L<POE::Component::IRC> ). 
+Takes N arguments: a list of event names that your session wants to listen for, minus the 'socksd_' prefix, ( this is
+similar to L<POE::Component::IRC> ).
 
 Registering for 'all' will cause it to send all SOCKSD-related events to you; this is the easiest way to handle it.
 
@@ -869,7 +865,7 @@ Generated when client successfully connects. ARG0 is a unique client ID, ARG1 is
 
 Generated when a SOCKS transaction is rejected. ARG0 is the unique client ID, ARG1 is the SOCKS result code and ARG2 is a reason for the rejection.
 
-=item C<socksd_listener_failed> 
+=item C<socksd_listener_failed>
 
 Generated if the poco fails to get a listener. ARG0 is the operation, ARG1 is the errnum and ARG2 is the errstr.
 
@@ -879,14 +875,14 @@ Generated whenever a client disconnects. ARG0 is the unique client ID.
 
 =item C<socksd_dns_lookup>
 
-Generated whenever the poco services a successful SOCKS 4a DNS lookup. ARG0 is the unique 
+Generated whenever the poco services a successful SOCKS 4a DNS lookup. ARG0 is the unique
 client ID. ARG1 is the hostname resolved and ARG2 is the IP address of that host.
 
-=item C<socksd_sock_up> 
+=item C<socksd_sock_up>
 
 Generated when a CONNECT is successful. ARG0 is the unique client ID, ARG1 is the unqiue link ID, ARG2 is the destination IP and ARG3 the destination port.
 
-=item C<socksd_bind_up> 
+=item C<socksd_bind_up>
 
 Generated whenever a BIND is succesful. ARG0 is the unique client ID, ARG1 is the unique ID for the listener, ARG2 is our socket IP and ARG3 is our port.
 
@@ -895,16 +891,6 @@ Generated whenever a BIND is succesful. ARG0 is the unique client ID, ARG1 is th
 Generated whenever a socket to an application server is terminated. ARG0 is the unique client ID, ARG1 is the unqiue link ID, ARG2 is the error string.
 
 =back
-
-=head1 AUTHOR
-
-Chris C<BinGOs> Williams <chris@bingosnet.co.uk>
-
-=head1 LICENSE
-
-Copyright E<copy> Chris Williams.
-
-This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 
 =head1 SEE ALSO
 
